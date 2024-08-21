@@ -22,17 +22,16 @@ const model = ref([
     {
         label: 'Gestión',
         icon: 'pi pi-fw pi-briefcase',
-        to: '/pages',
         items: [
             {
-                label: 'Landing',
+                label: 'Categoria',
                 icon: 'pi pi-fw pi-globe',
-                to: '/landing'
+                to: '/admin/categoria'
             },
             {
-                label: 'Crud',
+                label: 'Productos',
                 icon: 'pi pi-fw pi-pencil',
-                to: '/pages/crud'
+                to: '/admin/producto'
             }
         ]
     }
