@@ -9,6 +9,7 @@ import Persona from '../views/admin/usuario/Persona.vue'
 import NotFound from '../views/errors/NotFound.vue'
 import Categoria from '../views/admin/categoria/Categoria.vue'
 import Producto from '../views/admin/producto/Producto.vue'
+import PedidoNuevo from '../views/admin/pedido/PedidoNuevo.vue'
 
 import AppLayout from '@/layout/AppLayout.vue';
 
@@ -60,6 +61,13 @@ const router = createRouter({
                     path: 'producto',
                     component: Producto,
                     name: 'Producto',
+                    meta: { requireAuth: true }
+        
+                },
+                {
+                    path: 'pedido/nuevo',
+                    component: PedidoNuevo,
+                    name: 'PedidoNuevo',
                     meta: { requireAuth: true }
         
                 },

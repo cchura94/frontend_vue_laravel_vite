@@ -16,4 +16,7 @@ export default {
     eliminar: (id) => {
         return Api().delete(`/producto/${id}`);
     },
+    guardarImagen: (id, datos) => {
+        return Api().post(`/producto/${id}/upload-image`, datos);
+    }
 }

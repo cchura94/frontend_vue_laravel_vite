@@ -11,10 +11,15 @@
                 </template>
             </Toolbar>
 
+
             <DataTable
                 ref="dt"
                 :value="products"
+                :lazy="true"
+                :loading="loading"
                 dataKey="id"
+                :totalRecords="totalRecords"
+                @page="onPage"
                 :paginator="true"
                 :rows="10"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -28,7 +33,7 @@
                             <InputIcon>
                                 <i class="pi pi-search" />
                             </InputIcon>
-                            <InputText placeholder="Buscar..." />
+                            <InputText placeholder="Buscar..." v-model="buscar" @keypress.enter="busquedaProducto()"/>
                         </IconField>
                     </div>
                 </template>
@@ -49,6 +54,8 @@
                
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
+                        <Button icon="pi pi-image" rounded class="mr-2" @click="editImagen(slotProps.data)" />
+
                         <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" />
                         <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteProduct(slotProps.data)" />
                     </template>
@@ -112,6 +119,20 @@
             </template>
         </Dialog>
     </div>
+
+
+<Dialog v-model:visible="dialogImagen" modal header="Subir Imagen" :style="{ width: '25rem' }">
+    <span class="text-surface-500 dark:text-surface-400 block mb-8">Actualizar Imagen.</span>
+    <div class="flex items-center gap-4 mb-4">
+        <label for="username" class="font-semibold w-24">Seleccione su imagen</label>
+        <input type="file" @change="seleccionarImagen($event)">
+    </div>
+    <div class="flex justify-end gap-2">
+        <Button type="button" label="Cancelar" severity="secondary" @click="dialogImagen = false"></Button>
+        <Button type="button" label="Subir Imagen" @click="uploadImage()"></Button>
+    </div>
+</Dialog>
+
 </template>
 
 <script setup>
@@ -134,12 +155,30 @@ const productDialog = ref(false);
 const deleteProductDialog = ref(false);
 const product = ref({});
 const submitted = ref(false);
+const dialogImagen = ref(false)
+const producto_id = ref(-1)
+const buscar = ref("")
+
+const loading = ref(false)
+const totalRecords = ref(0)
 
 
-const getProductos = async () => {
-    const {data} = await productoService.listar();
+const getProductos = async (page=1, limit=10) => {
+    loading.value = true;
+    const {data} = await productoService.listar(page, limit, buscar.value);
      products.value = data.data
+     totalRecords.value = data.total
+     loading.value = false;
 }
+
+const onPage = (event) => {
+    
+
+    getProductos(event.page + 1, event.rows)
+
+    
+        
+};
 
 const getCategorias = async () => {
     const {data} = await categoriaService.listar();
@@ -149,6 +188,31 @@ const getCategorias = async () => {
 function formatCurrency(value) {
     if (value) return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
     return;
+}
+
+function editImagen(prod) {
+    dialogImagen.value = true;
+    producto_id.value = prod.id
+}
+
+async function seleccionarImagen(event){
+    console.log(event.target.files[0]);
+    product.value.imagen = event.target.files[0];
+
+}
+
+function busquedaProducto(){
+    getProductos();
+}
+
+async function uploadImage(){
+    let formData = new FormData();
+    formData.append("imagen", product.value.imagen);
+
+    await productoService.guardarImagen(producto_id.value, formData)
+
+    dialogImagen.value = false
+    getProductos()
 }
 
 function openNew() {

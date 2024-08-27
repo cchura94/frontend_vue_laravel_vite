@@ -34,6 +34,22 @@ const model = ref([
                 to: '/admin/producto'
             }
         ]
+    },
+    {
+        label: 'Ventas',
+        icon: 'pi pi-fw pi-briefcase',
+        items: [
+            {
+                label: 'Nuevo Pedido',
+                icon: 'pi pi-fw pi-globe',
+                to: '/admin/pedido/nuevo'
+            },
+            {
+                label: 'Lista Pedido',
+                icon: 'pi pi-fw pi-pencil',
+                to: '/admin/pedido'
+            }
+        ]
     }
 ]);
 </script>
