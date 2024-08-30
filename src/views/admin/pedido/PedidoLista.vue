@@ -8,7 +8,7 @@
         <Column field="productos" header="PRODUCTOS">
             <template #body="slotProps">
             <Button
-              icon="pi pi-product"
+              icon="pi pi-table"
               rounded
               class="mr-2"
               @click="mostrarPedido(slotProps.data)"
@@ -19,10 +19,10 @@
         <Column :exportable="false" style="min-width: 6rem">
           <template #body="slotProps">
             <Button
-              icon="pi pi-plus"
+              icon="pi pi-print"
               rounded
               class="mr-2"
-              @click="addCarrito(slotProps.data)"
+              @click="descargarPDF(slotProps.data)"
             />
           </template>
         </Column>
@@ -30,22 +30,21 @@
 
 
 <Dialog v-model:visible="visible_pedido" modal header="Datos Pedidos" :style="{ width: '55rem' }">
-    <span class="text-surface-500 dark:text-surface-400 block mb-8">Datos.</span>
+    <span class="text-surface-500 dark:text-surface-400 block mb-8">FECHA PEDIDO: {{ productos_detalle.fecha_pedido }}</span>
+    <span class="text-surface-500 dark:text-surface-400 block mb-8">
+      CLIENTE: 
+      {{productos_detalle.cliente.nombre_completo}}
+       CI/NIT: {{productos_detalle.cliente.ci_nit}}
+    </span>
+    
+
     
     
     <DataTable :value="productos_detalle.productos" tableStyle="min-width: 50rem">
-        <Column field="stock" header="Stock"></Column>
+        <Column field="nombre" header="Nombre"></Column>
         <Column field="precio" header="Precio"></Column>
-        <Column :exportable="false" style="min-width: 6rem">
-          <template #body="slotProps">
-            <Button
-              icon="pi pi-plus"
-              rounded
-              class="mr-2"
-              @click="addCarrito(slotProps.data)"
-            />
-          </template>
-        </Column>
+        <Column field="pivot.cantidad_salida" header="Cant"></Column>
+        
       </DataTable>
     
     <div class="flex justify-end gap-2">
@@ -75,8 +74,26 @@ const getPedidos = async () => {
     pedidos.value = data.data;
 }
 
-const mostrarPedido = async (prod) => {
+const mostrarPedido = async (ped) => {
+
+console.log(ped)
+
 visible_pedido.value = true
-productos_detalle.value = prod
+productos_detalle.value = ped
+}
+
+const descargarPDF = async (ped) => {
+  const respuesta = await pedidoService.descargarPDF(ped.id);
+
+  const url = window.URL.createObjectURL(new Blob([respuesta.data], {type: 'application/pdf'}));
+
+  const link = document.createElement('a');
+  link.href = url;
+
+  link.setAttribute('download', `recibo-${ped.id}.pdf`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
 }
 </script>

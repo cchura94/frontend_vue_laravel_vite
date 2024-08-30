@@ -7,6 +7,9 @@ export default {
     guadar: (datos) => {
         return Api().post("/pedido", datos);
     },
+    descargarPDF: (id) => {
+        return Api().get(`/pedido/${id}/reporte-pdf`, {responseType: 'blob'});
+    },
     mostrar: (id) => {
         return Api().get(`/pedido/${id}`);
     },
